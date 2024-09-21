@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Discutable</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .chat-container {
+            width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .chat-messages {
+            padding: 20px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        #user-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+        #send-button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #send-button:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>IA Discutable</h1>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Discutez avec moi !</h2>
+        </div>
+        <div class="chat-messages">
+            <div class="message" id="user-message"></div>
+            <div class="message" id="ai-response"></div>
+        </div>
+        <input type="text" id="user-input" placeholder="Écrivez votre message...">
+        <button id="send-button">Envoyer</button>
+    </div>
+
+    <script>
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const userMessage = document.getElementById('user-message');
+        const aiResponse = document.getElementById('ai-response');
+
+        let conversation = [];
+        let aiResponses = {
+            'Bonjour': 'Bonjour ! Comment puis-je vous aider ?',
+            'Quel est votre nom ?': 'Je m\'appelle IA Discutable, et je suis là pour discuter avec vous !',
+            'Quel est votre but ?': 'Mon but est de discuter avec les utilisateurs et de leur fournir des informations utiles.',
+            default: 'Je ne comprends pas votre question. Pouvez-vous reformuler ?'
+        };
+
+        sendButton.addEventListener('click', () => {
+            const userText = userInput.value.trim();
+            if (userText !== '') {
+                conversation.push({ user: userText });
+                userInput.value = '';
+                getAIResponse();
+            }
+        });
+
+        function getAIResponse() {
+            const lastUserMessage = conversation[conversation.length - 1].user;
+            let aiText = aiResponses[lastUserMessage] || aiResponses.default;
+
+            if (aiText === aiResponses.default) {
+                // Si l'IA ne connaît pas la réponse, demander à l'utilisateur de l'enseigner
+                aiText = prompt(`Je ne connais pas la réponse à "${lastUserMessage}". Pouvez-vous me l'enseigner ?`);
+                if (aiText) {
+                    // Ajouter la nouvelle réponse à la base de connaissances de l'IA
+                    aiResponses[lastUserMessage] = aiText;
+                }
+            }
+
+            conversation.push({ ai: aiText });
+            displayConversation();
+        }
+
+        function displayConversation() {
+            userMessage.innerHTML = '';
+            aiResponse.innerHTML = '';
+
+            conversation.forEach((message) => {
+                if (message.user) {
+                    userMessage.innerHTML += `<p>${message.user}</p>`;
+                } else {
+                    aiResponse.innerHTML += `<p>${message.ai}</p>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
